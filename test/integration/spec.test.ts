@@ -1,10 +1,6 @@
-import {
-  assert,
-  assertEquals,
-} from "https://deno.land/std@0.84.0/testing/asserts.ts";
-
-import { doTest, Example } from "./helper.ts";
+import { assert, assertEquals } from "../../deps.ts";
 import { expand } from "../../mod.ts";
+import { doTest, Example } from "./helper.ts";
 
 const [x, y] = await Promise.all([
   Deno.readTextFile("./uritemplate-test/spec-examples.json"),
@@ -19,7 +15,9 @@ const examples: Record<string, Example> = {
 doTest(
   examples,
   ({ testcase: [x, y], variables }) =>
-    typeof y === "string"
-      ? assertEquals(expand(x, variables), y)
-      : assert(y.includes(expand(x, variables))),
+    typeof y === "string" ? assertEquals(expand(x, variables), y) : assert(
+      y.includes(
+        expand(x, variables),
+      ),
+    ),
 );

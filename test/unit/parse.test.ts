@@ -1,9 +1,5 @@
-import {
-  assertEquals,
-  assertThrows,
-} from "https://deno.land/std@0.84.0/testing/asserts.ts";
-
 import { Expression, ExpressionType, parse } from "../../mod.ts";
+import { assertEquals, assertThrows } from "../../deps.ts";
 
 Deno.test("Should parse '{foo}' to a list of expressions", () => {
   const expected: Expression[] = [
@@ -79,21 +75,57 @@ Deno.test("Should parse 'foo/{bar}/baz' to a list of expressions", () => {
 });
 
 Deno.test("Should throw when a closing brace is found without an opening brace", () => {
-  assertThrows(() => parse("}"), Error, "ParseError");
-  assertThrows(() => parse("foo}bar"), Error, "ParseError");
+  assertThrows(
+    () => parse("}"),
+    Error,
+    "Unexpected char '}' at position 1 in '}', expected an opening brace before a closing brace.",
+  );
+
+  assertThrows(
+    () => parse("foo}bar"),
+    Error,
+    "Unexpected char '}' at position 4 in 'foo}bar', expected an opening brace before a closing brace.",
+  );
 });
 
 Deno.test("Should throw when an opening brace is found at the end", () => {
-  assertThrows(() => parse("{"), Error, "ParseError");
-  assertThrows(() => parse("foo{"), Error, "ParseError");
+  assertThrows(
+    () => parse("{"),
+    Error,
+    "Unexpected char '{' at position 1 in '{', expected a closing brace.",
+  );
+
+  assertThrows(
+    () => parse("foo{"),
+    Error,
+    "Unexpected char '{' at position 4 in 'foo{', expected a closing brace.",
+  );
 });
 
 Deno.test("Should throw when an opening brace is not closed", () => {
-  assertThrows(() => parse("foo{bar"), Error, "ParseError");
-  assertThrows(() => parse("foo{bar{baz}"), Error, "ParseError");
+  assertThrows(
+    () => parse("foo{bar"),
+    Error,
+    "Unexpected char 'r' at position 7 in 'foo{bar', expected a closing brace.",
+  );
+
+  assertThrows(
+    () => parse("foo{bar{baz}"),
+    Error,
+    "Unexpected char '{' at position 8 in 'foo{bar{baz}', expected a closing brace.",
+  );
 });
 
 Deno.test("Should throw when empty braces are found", () => {
-  assertThrows(() => parse("{}"), Error, "ParseError");
-  assertThrows(() => parse("foo/{}"), Error, "ParseError");
+  assertThrows(
+    () => parse("{}"),
+    Error,
+    "Unexpected char '}' at position 2 in '{}', expected a pair of braces to have content.",
+  );
+
+  assertThrows(
+    () => parse("foo/{}"),
+    Error,
+    "Unexpected char '}' at position 6 in 'foo/{}', expected a pair of braces to have content.",
+  );
 });

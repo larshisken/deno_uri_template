@@ -1,5 +1,4 @@
-import { assertEquals } from "https://deno.land/std@0.84.0/testing/asserts.ts";
-
+import { assertEquals } from "../../deps.ts";
 import { pctEncode, pctEncodeChar } from "../../pct.ts";
 
 Deno.test("Should encode individual characters", () => {
