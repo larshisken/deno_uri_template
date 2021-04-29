@@ -175,10 +175,14 @@ function parse(template: string): Expression[] {
     if (length === index + 1 /* last char */) {
       if (
         char === "{" ||
-        cursor.over === ExpressionType.Variable && char !== "}"
+        (cursor.over === ExpressionType.Variable && char !== "}")
       ) {
-        throw new Error("ParseError");
+        throw new Error(
+          `Unexpected char '${char}' at position ${index +
+            1} in '${template}', expected a closing brace.`,
+        );
       }
+
       if (cursor.over === ExpressionType.Literal) {
         expressions.push({
           type: ExpressionType.Literal,
@@ -188,11 +192,18 @@ function parse(template: string): Expression[] {
       }
     }
 
-    if (
-      cursor.over === ExpressionType.Literal && char === "}" ||
-      cursor.over === ExpressionType.Variable && char === "{"
-    ) {
-      throw new Error("ParseError");
+    if (cursor.over === ExpressionType.Variable && char === "{") {
+      throw new Error(
+        `Unexpected char '{' at position ${index +
+          1} in '${template}', expected a closing brace.`,
+      );
+    }
+
+    if (cursor.over === ExpressionType.Literal && char === "}") {
+      throw new Error(
+        `Unexpected char '}' at position ${index +
+          1} in '${template}', expected an opening brace before a closing brace.`,
+      );
     }
 
     if (cursor.over === ExpressionType.Literal && char === "{") {
@@ -215,7 +226,10 @@ function parse(template: string): Expression[] {
     if (cursor.over === ExpressionType.Variable && char === "}") {
       if (index === cursor.pos + 1) {
         // braces are empty
-        throw new Error("ParseError");
+        throw new Error(
+          `Unexpected char '${template[index]}' at position ${index +
+            1} in '${template}', expected a pair of braces to have content.`,
+        );
       }
 
       const from = cursor.pos + 1;
